@@ -1,0 +1,99 @@
+<!doctype html>
+<style>
+body{
+  font-family:'helvetica neue';
+  font-size:14px;
+}
+li{
+  float:left;
+  width:100%;
+  list-style-type:none;
+  padding:0px 15px;
+  margin:0px 0px;
+  overflow:auto;
+}
+li .half{
+ width:50%;
+ float:left;
+}
+.doc{
+  width:800px;
+  margin:20px auto;
+}
+.text{
+  font-weight:200;
+  font-size:2.2em;
+  margin:20px 0px;
+}
+.search{
+
+}
+.search input{
+  width:98%;
+  height:20px;
+  border: 1px solid #ccc;
+  background-color:#eee;
+  padding:1%;
+  font-size:1.5em;
+  font-weight:200;
+}
+ul#results{
+ float:left;
+ width:100%;
+ margin:20px 0px;
+ padding:10px 0px;
+ font-weight:200;
+ font-size:1.2em;
+ background-color:#444;
+ border:1px solid #111;
+ color:white;
+ font-family:"courier new";
+}
+</style>
+<html>
+<head>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+</head>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#query").submit(function(event){
+    console.log($("#query").find("input").val())
+    $("#results").empty();
+    $("#results").append("<li>Loading...</li>");
+    $.ajax({
+      url: "/query/"+encodeURIComponent($("#query").find("input").val()),
+      success: function(result){
+       $("#results").empty();
+       var t1 = "<div class='half'>Word Result</div>",
+           t2 = "<div class='half'>Similarity</div>",
+           sp = "<div class='half'>===========</div>";
+       $("#results").append("<li>"+t1+t2+"</li>");
+       $("#results").append("<li>"+sp+sp+"</li>");
+       for (i in result){
+         var str_ = result[i][0],
+             prob = result[i][1];
+         if(str_.match("_")) str_ = str_.split(" ")[0];
+         var h1 = "<div class='half'>"+str_+"</div>",
+             h2 = "<div class='half'>"+prob+"</div>";
+         $("#results").append("<li>"+h1+h2+"</li>");
+       }
+      },
+      dataType: "json"
+    });
+    event.preventDefault();
+    });
+  });
+</script>
+<div class="doc">
+<div class="text">Enter a comma-seperated list of words </div>
+<div class="search">
+  <form id="query">
+    <input></input>
+    <submit></submit>
+ </form>
+</div>
+<ul id="results">
+  <li>Nothing here...</li>
+</ul>
+</div>
+</html>
